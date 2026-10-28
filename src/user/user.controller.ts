@@ -1,4 +1,26 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get, Post } from "@nestjs/common";
+import { UserService } from "./user.service";
+import { PrismaService } from "../prisma/prisma.service";
 
-@Controller('user')
-export class UserController {}
+@Controller("user")
+export class UserController {
+  constructor(
+    private readonly showme: UserService,
+    private readonly prisma: PrismaService,
+  ) {}
+
+  @Get()
+  async getalluser() {
+    return this.prisma.user.findMany();
+  }
+
+  @Post()
+  async createUser() {
+    return this.prisma.user.create({
+      data: {
+        name: "",
+        email: "",
+      },
+    });
+  }
+}
