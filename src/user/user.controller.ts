@@ -15,12 +15,7 @@ export class UserController {
   }
 
   @Post()
-  async createUser() {
-    return this.prisma.user.create({
-      data: {
-        name: "",
-        email: "",
-      },
-    });
+  createUser() {
+    return "hello user";
   }
 }
