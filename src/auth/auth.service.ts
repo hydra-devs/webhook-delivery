@@ -8,10 +8,14 @@ import { RegisterDto } from "./dto/register.dto";
 import * as argon2 from "argon2";
 import { AccountRole } from "../../generated/prisma/enums";
 import { LoginDto } from "./dto/login.dto";
+import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService,
+  ) {}
   private async hashPassword(password: string): Promise<string> {
     try {
       return await argon2.hash(password);
@@ -51,7 +55,17 @@ export class AuthService {
         },
       },
     });
-    return account;
+    const accessToken = await this.jwtService.signAsync({
+      sub: account.user[0].id,
+      accountId: account.id,
+      role: account.user[0].role,
+    });
+
+    return {
+      access_token: accessToken,
+      token_type: "Bearer",
+      expires_in: 900,
+    };
   }
 
   async login(input: LoginDto) {
@@ -72,15 +86,17 @@ export class AuthService {
     if (!passwordMatches) {
       throw new UnauthorizedException("Invalid email or password");
     }
+
+    const accessToken = await this.jwtService.signAsync({
+      sub: user.id,
+      accountId: user.accountId,
+      role: user.role,
+    });
+
     return {
-      message: "Login successful",
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        accountId: user.accountId,
-      },
+      access_token: accessToken,
+      token_type: "Bearer",
+      expires_in: 900,
     };
   }
 }
