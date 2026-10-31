@@ -47,7 +47,7 @@ export class WebhookEndpointsService {
     });
 
     if (result.count === 0) {
-      throw new NotFoundException("Webhook endpoint not found");
+      throw new NotFoundException("Webhook endpoints not found");
     }
 
     return await this.prisma.webhookEndpoint.findFirst({
