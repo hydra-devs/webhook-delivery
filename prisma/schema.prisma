@@ -46,13 +46,14 @@ model User {
 }
 
 model WebhookEndpoint {
-  id          String   @id @default(uuid())
-  url         String
-  description String?
-  isActive    Boolean  @default(true)
-  accountId   String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String                @id @default(uuid())
+  url           String
+  description   String?
+  isActive      Boolean               @default(true)
+  accountId     String
+  subscriptions WebhookSubscription[]
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
 
   account Account @relation(fields: [accountId], references: [id], onDelete: Restrict)
 
@@ -71,4 +72,17 @@ model Event {
 
   @@index([accountId, createdAt])
   @@index([accountId, eventType])
+}
+
+model WebhookSubscription {
+  id                String   @id @default(uuid())
+  eventType         String
+  webhookEndpointId String
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+
+  webhookEndpoint WebhookEndpoint @relation(fields: [webhookEndpointId], references: [id], onDelete: Cascade)
+
+  @@unique([webhookEndpointId, eventType])
+  @@index([eventType])
 }
