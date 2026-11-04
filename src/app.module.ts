@@ -8,6 +8,7 @@ import { EventsModule } from "./events/events.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { ConfigModule } from "@nestjs/config";
 import { WebhookSubscriptionModule } from "./webhook-subscription/webhook-subscription.module";
+import { ApiKeyModule } from './api-key/api-key.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { WebhookSubscriptionModule } from "./webhook-subscription/webhook-subscr
     EventsModule,
     PrismaModule,
     WebhookSubscriptionModule,
+    ApiKeyModule,
   ],
   controllers: [AppController],
   providers: [AppService],
