@@ -1,6 +1,7 @@
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { ValidationPipe } from "@nestjs/common";
+import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -11,6 +12,25 @@ async function bootstrap() {
       transform: true,
     }),
   );
+  const config = new DocumentBuilder()
+    .setTitle("Webhook Delivery Platform API")
+    .setDescription("API documentation for the Webhook Delivery Platform")
+    .setVersion("1.0")
+    .addBearerAuth()
+    .addApiKey(
+      {
+        type: "apiKey",
+        name: "X-API-Key",
+        in: "header",
+      },
+      "api-key",
+    )
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+
+  SwaggerModule.setup("api/docs", app, document);
+
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

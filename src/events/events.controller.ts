@@ -15,7 +15,15 @@ import type { AuthenticatedRequest } from "../auth/interface/authenticated-reque
 import { ApiKeyGuardTsGuard } from "../api-key/guard/api-key-guard.ts/api-key-guard.ts.guard";
 import { BadRequestException } from "@nestjs/common";
 import type { ApiKeyAuthenticatedRequest } from "../api-key/interface/api-key-auth-request.interface";
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from "@nestjs/swagger";
+import { ApiSecurity } from "@nestjs/swagger";
 
+@ApiTags("Events")
 @Controller("events")
 export class EventsController {
   //Validate filtering value (page & limit)
@@ -45,12 +53,44 @@ export class EventsController {
   //Event Publishing Endpoint
   @Post()
   @UseGuards(ApiKeyGuardTsGuard)
+  @ApiSecurity("api-key")
+  @ApiOperation({
+    summary: "Publish an event using an API key",
+  })
+  @ApiResponse({
+    status: 201,
+    description: "Event successfully stored under the API key owner account.",
+  })
+  @ApiResponse({
+    status: 401,
+    description: "Missing, invalid, or revoked API key.",
+  })
+  @ApiResponse({
+    status: 400,
+    description: "Invalid event request body.",
+  })
   create(@Body() dto: CreateEventDto, @Req() req: ApiKeyAuthenticatedRequest) {
     return this.eventService.create(dto, req.accountId);
   }
 
   @Get()
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: "Retrieve events belonging to the authenticated account",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Events retrieved successfully.",
+  })
+  @ApiResponse({
+    status: 401,
+    description: "Unauthorized. A valid JWT is required.",
+  })
+  @ApiResponse({
+    status: 400,
+    description: "Invalid pagination parameters.",
+  })
   findAll(
     @Req() req: AuthenticatedRequest,
     @Query("eventType") eventType?: string,
@@ -70,6 +110,7 @@ export class EventsController {
 
   @Get(":id")
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   findOne(@Req() req: AuthenticatedRequest, @Param("id") id: string) {
     return this.eventService.findOne(id, req.user!.accountId);
   }
