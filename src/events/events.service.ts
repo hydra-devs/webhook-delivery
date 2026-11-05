@@ -17,14 +17,17 @@ export class EventsService {
     });
   }
 
-  async findAll(accountId: string) {
+  async findAll(accountId: string, eventType?: string, page = 1, limit = 10) {
     return await this.prisma.event.findMany({
       where: {
         accountId,
+        ...(eventType && { eventType }),
       },
       orderBy: {
         createdAt: "desc",
       },
+      skip: (page - 1) * limit,
+      take: limit,
     });
   }
 
