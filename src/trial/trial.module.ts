@@ -3,7 +3,7 @@ import { TrialController } from './trial.controller';
 import { TrialService } from './trial.service';
 
 @Module({
-  controllers: [TrialController],
+  controllers:[TrialController],
   providers: [TrialService]
 })
-export class TrialModule {}
+export class TrialModule
