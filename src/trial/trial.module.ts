@@ -1,9 +1,9 @@
-import { Module } from '@nestjs/common';
-import { TrialController } from './trial.controller';
-import { TrialService } from './trial.service';
+import { Module } from "@nestjs/common";
+import { TrialController } from "./trial.controller";
+import { TrialService } from "./trial.service";
 
 @Module({
-  controllers:[TrialController],
-  providers: [TrialService]
+  controllers: [TrialController],
+  providers: [TrialService],
 })
-export class TrialModule
+export class TrialModule {}
